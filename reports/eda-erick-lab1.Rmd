@@ -1,5 +1,5 @@
 ---
-title: "EDA Lab1"
+title: "EDA Laboratório 1"
 output:
   html_notebook:
     toc: yes
@@ -13,6 +13,8 @@ output:
 ```{r setup, echo=FALSE, warning=FALSE, message=FALSE}
 library(tidyverse)
 library(here)
+library(plotly)
+library(shiny)
 theme_set(theme_bw())
 ```
 
@@ -41,9 +43,9 @@ sherlock = read_csv(here("data/series_from_imdb.csv"),
     filter(series_name == "Sherlock")
 ```
 
-## Visão geral
+#1. Visão geral
 
-Abaixo temos uma visão geral de cada uma das séries escolhidas
+Abaixo temos uma visão geral de cada uma das séries escolhidas. Breaking Bad tem um total de 5 temporadas e 62 episódios, enquanto Sherlock conta com 4 temporadas e apenas 15 episódios.
 
 ```{r}
 
@@ -53,9 +55,22 @@ sherlock
 
 ```
 
-## Qual a avaliação por temporada?
+#2. Qual a série com a melhor avaliação?
 
-Cada temporada tem uma avaliação, calculada pela média das avaliações dadas pelos usuários aos episódios que pertencem aquela temporada. 
+```{r}
+rating <- c(round(mean(breakingBad$user_rating), 2), round(mean(sherlock$user_rating),2))
+series <- c("Breaking Bad", "Sherlock")
+
+overallRating <- data.frame(series, rating)
+overallRating
+
+```
+
+Breaking Bad se mostra uma série mais bem avaliada do que Sherlock, com uma diferença muito pequena. No entanto, essa é uma visão muito superficial, vamos mais fundo observando as avaliações por temporada e depois por episódio.
+
+##2.1 Quais as avaliações por temporada?
+
+Cada temporada tem uma avaliação, calculada pela média de avaliações dadas pelos usuários aos episódios que à pertencem. 
 
 Para Breaking Bad é possível ver que as pior e melhor temporadas são respectivamente a primeira e a última, com uma qualidade crescente com exceção da terceira temporada.
 
@@ -65,18 +80,95 @@ breakingBadBySeason <- breakingBad %>%
     group_by(season) %>%
     mutate (season_rating = round(mean(user_rating), 2))
 
-ggplot(data = breakingBadBySeason, mapping = aes(x = season, y = season_rating)) + geom_point()
+ggplot(breakingBadBySeason, aes(x = season, y = season_rating, group = 1, label = season_rating)) +
+       geom_line() +
+       geom_point() +
+       geom_text(nudge_x = .1, nudge_y = -.02, color = "blue") +
+       labs(y = "Rating", x = "Season")
+
 ```
 
-Para Sherlock é possível ver que as pior e melhor temporadas são respectivamente a última e a segunda, ela não foi capaz de manter uma qualidade crescente.
+Para Sherlock é possível ver que as pior e melhor temporadas são respectivamente a última e a segunda, diferente de Breaking Bad ela não foi capaz de manter uma qualidade crescente.
 
 ```{r}
+
 sherlockBySeason <- sherlock %>%
     group_by(season) %>%
     mutate (season_rating = round(mean(user_rating), 2))
 
+ggplot(sherlockBySeason, aes(x = season, y = season_rating, group = 1, label = season_rating)) +
+    geom_line() +
+    geom_point() +
+    geom_text(nudge_x = .1, nudge_y = -.02, color = "blue") +
+    labs(y = "Rating", x = "Season")
 
-ggplot(data = sherlockBySeason, mapping = aes(x = season, y = season_rating)) + geom_point()
 ```
 
-## Qual a avaliação por episódio 
+
+##2.2 Quais as avaliações por episódio?
+
+Sherlock
+
+```{r}
+
+ggplot(sherlock, aes(x = season_ep, y = user_rating)) + 
+    geom_line() + 
+    geom_point(aes(colour = user_votes)) +
+    scale_colour_gradient(low = "blue") + 
+    facet_wrap(~ season, ncol = 2, nrow = 2) + 
+    coord_fixed() +
+    labs(y = "Rating", x = "Season episodes") 
+
+```
+
+É possível observar que a qualidade dos episódios de Sherlock é bastante irregular, com exceção para temporada 3 cujos episódios mantém um certo nível. Outras observaçõesimportantes são a quantidade de avaliações, que também tende a variar no decorrer da série, mas não de forma crescente e o fato de que os finais de temporada sempre são melhor avaliados que os inícios. Abaixo mostramos a ordem do pior ao melhor episódio.
+
+```{r}
+
+arrangedSherlockData <- sherlock[order(sherlock$user_rating),] 
+arrangedSherlockData <- select(arrangedSherlockData, episode, series_ep, season, user_rating)
+arrangedSherlockData
+
+```
+
+Breaking Bad
+
+```{r}
+
+ggplot(breakingBad, aes(x = season_ep, y = user_rating)) + 
+    geom_line() + 
+    geom_point(aes(colour = user_votes)) +
+    scale_colour_gradient(low = "blue") +
+    facet_wrap(~ season, nrow = 3, ncol = 2) +
+    scale_x_continuous(breaks = (1:16)) +
+    labs(y = "Rating", x = "Season episodes")
+
+```
+É possível observar que a qualidade dos episódios de Breaking também é bastante irregular, com exceção para as temporadas 2 e 5 que parecem manter uma qualidade um pouco mais linear que as outras. Outras observações importantes são a quantidade de avaliações que quase não sofre alterações no decorrer da série e o fato de que os finais de temporada tendem a ter uma nota mais alta do que os inícios. Abaixo mostramos a ordem do pior ao melhor episódio.
+```{r}
+
+arrangedBreakingBadData <- breakingBad[order(breakingBad$user_rating),] 
+arrangedBreakingBadData <- select(arrangedBreakingBadData, episode, series_ep, season, user_rating)
+arrangedBreakingBadData
+
+```
+
+##2.3 Qualidade das séries
+
+Para analisar um pouco melhor a questão da qualidade irregular das séries, usaremos outra representação para ver com mais clareza o espaçamento dos dados e chegar a uma conclusão concreta.
+
+```{r}
+tvShows <- rbind(breakingBad, sherlock)
+tvShows
+
+ggplot(tvShows, aes(series_name, user_rating)) + geom_boxplot()
+```
+Podemos observar que a maioria dos episódios de Breaking Bad tem uma nota próxima a 9 ou acima, enquanto que Sherlock tem mais episódios com nota inferior a 9. Tornando assim Breaking Bad uma série com avaliações superiores à Sherlock.
+
+# Episódios sem graça
+
+Qual das séries ou temporadas tem episódios mais sem graça?
+
+```{r}
+
+```
