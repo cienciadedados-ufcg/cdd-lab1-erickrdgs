@@ -20,8 +20,10 @@ Nesse lab. analisaremos as séries Breaking Bad, Hannibal e Sherlock, respondend
 
 1. Qual delas é mais bem avaliada no IMDB A diferença é grande? Pequena? Muda de acordo com as temporadas?
 2. Qual das séries tem episódios de qualidade mais irregular segundo o IMDB? A diferença é grande? Pequena?
+3. Episódios no início/fim da temporada são mais bem avaliados que os no meio? O que tende a ser melhor? Inícios ou finais de séries/temporadas?
 
 ```{r}
+
 series = read_csv(here("data/series_from_imdb.csv"), 
                     progress = FALSE,
                     col_types = cols(.default = col_double(), 
@@ -31,9 +33,12 @@ series = read_csv(here("data/series_from_imdb.csv"),
                                      season = col_character())) %>% 
     filter(series_name == "Breaking Bad" | series_name == "Sherlock" | series_name == "Hannibal")
 
+
 ```
 
 #1. Visão geral
+
+Abaixo temos a visão geral das séries, mostrando a sua quantidade de episódios, temporadas e notas.
 
 ```{r}
 
@@ -48,7 +53,9 @@ series %>%
 
 ```
 
-##2. Qual a série com a melhor avaliação?
+#2. Qual a série com a melhor avaliação?
+
+Qual será, dentre as 3, a série com a melhor avaliação? Bom, observando o gráfico abaixo comparando o desempenho delas no decorrer das temporadas, é possível perceber que ambas Sherlock e Hannibal, conseguem um desempenho geral superior ao de Breaking Bad, a qual se mantém quase constante até atingir um aumento significativo na 4 temporada.
 
 ```{r}
 
@@ -64,8 +71,23 @@ ggplot(seriesBySeason, aes(x = season, y = season_rating, group = series_name, l
 
 ```
 
+Com um olhar mais atento da para notar que enquanto Breaking Bad foi melhorando com o passar dos anos, Sherlock e Hannibal tiveram seus picos na segunda temporada para em seguida despencarem na terceira. Mas então, de maneira geral, qual delas tem a melhor avaliação? Abaixo calculamos a média de cada uma delas (representada pelo ponto) e chegamos à conclusão de Breaking Bad é a mais bem avaliada, mesmo se mostrando 'inferior' nas primeiras temporadas, acompanhada por Hannibal, como a segunda mais bem avaliada e por fim Sherlock.
+    
+```{r}
 
-##2.1 Quais as avaliações por episódio?
+ggplot(series, aes(x = series_name, y = user_rating)) +
+    
+    stat_summary(
+        fun.ymin = min,
+        fun.ymax = max,
+        fun.y = mean
+    ) +
+    labs(y = "Rating", x = "Series")
+
+```
+A diferença entre suas notas gerais é bem baixa.
+
+##2.1 Quais séries tem qualidade mais irregular?
 
 ```{r}
 
@@ -74,14 +96,16 @@ ggplot(seriesBySeason, aes(x = season_ep, y = user_rating, group = series_name, 
        geom_point() +
        facet_wrap(~season, nrow = 5) +
        scale_x_continuous(breaks = (1:16)) +
-       labs(y = "Rating", x = "Episodes")
+       labs(y = "Rating", x = "Episodes") +
+       coord_fixed()
 
 ```
+   
+Observando as avaliações da séries por episódios não é díficil perceber uma correlação positiva e linear entre os episódios da temporada e suas notas para Breaking Bad e Hannibal, isto é, por mais existam algumas exceções (pontos fora da curva), podemos observar que eles tendem a formar uma linha crescente indicando que os episódios dessas séries tendem a terem avaliações melhores no decorrer das temporadas.
 
-##2.2 Qualidade das séries
+Sherlock, por outro lado, se mostra bastante irregular na maioria das suas temporadas (com exceção para a terceira), as notas dos episódios oscilam bastante, mostrando assim que ela é a série com maior irregularidade nos episódios.
+    
+#3. Finais de temporada ou inícios?
 
-```{r}
+De acordo com os gráficos já apresentados pudemos notar que os finais de temporada tendem a ser melhores que os inícios, isto é, o último episódio tende a ter uma nota maior que o primeiro (mesmo quando há muita oscilação). Já para os finais de série não da para se dizer o mesmo, pois Sherlock teve sua última temporada com a pior avaliação dentre as outras, enquanto que Breaking Bad e Hannibal tiveram temporadas finais com notas superiores às suas iniciais.
 
-ggplot(series, aes(series_name, user_rating)) + geom_boxplot() + labs(y = "Rating", x = "Series")
-
-```
