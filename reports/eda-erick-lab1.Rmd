@@ -1,11 +1,11 @@
 ---
 title: "EDA Laboratório 1"
 output:
-  html_notebook:
-    toc: yes
-    toc_float: yes
   html_document:
     df_print: paged
+    toc: yes
+    toc_float: yes
+  html_notebook:
     toc: yes
     toc_float: yes
 ---
@@ -55,7 +55,7 @@ series %>%
 
 #2. Qual a série com a melhor avaliação?
 
-Qual será, dentre as 3, a série com a melhor avaliação? Bom, observando o gráfico abaixo comparando o desempenho delas no decorrer das temporadas, é possível perceber que ambas Sherlock e Hannibal, conseguem um desempenho geral superior ao de Breaking Bad, a qual se mantém quase constante até atingir um aumento significativo na 4 temporada.
+Qual será, dentre as 3, a série com a melhor avaliação? Bom, observando o gráfico abaixo que utiliza a média para comparar o desempenho delas no decorrer das temporadas, é possível perceber que ambas Sherlock e Hannibal conseguem um desempenho geral superior ao de Breaking Bad, a qual se mantém quase constante até atingir um aumento significativo na 4 temporada.
 
 ```{r}
 
@@ -71,7 +71,7 @@ ggplot(seriesBySeason, aes(x = season, y = season_rating, group = series_name, l
 
 ```
 
-Com um olhar mais atento da para notar que enquanto Breaking Bad foi melhorando com o passar dos anos, Sherlock e Hannibal tiveram seus picos na segunda temporada para em seguida despencarem na terceira. Mas então, de maneira geral, qual delas tem a melhor avaliação? Abaixo calculamos a média de cada uma delas (representada pelo ponto) e chegamos à conclusão de Breaking Bad é a mais bem avaliada, mesmo se mostrando 'inferior' nas primeiras temporadas, acompanhada por Hannibal, como a segunda mais bem avaliada e por fim Sherlock.
+Com um olhar mais atento dá para notar que enquanto Breaking Bad foi melhorando com o passar dos anos, Sherlock e Hannibal tiveram seus picos na segunda temporada para em seguida despencarem na terceira. Mas então, de maneira geral, qual delas tem a melhor avaliação? Abaixo calculamos a média de cada uma delas (representada pelo ponto) e chegamos à conclusão que Breaking Bad é a mais bem avaliada, mesmo se mostrando 'inferior' nas primeiras temporadas, acompanhada por Hannibal, como a segunda mais bem avaliada e por fim Sherlock.
     
 ```{r}
 
@@ -101,11 +101,14 @@ ggplot(seriesBySeason, aes(x = season_ep, y = user_rating, group = series_name, 
 
 ```
    
-Observando as avaliações da séries por episódios não é díficil perceber uma correlação positiva e linear entre os episódios da temporada e suas notas para Breaking Bad e Hannibal, isto é, por mais existam algumas exceções (pontos fora da curva), podemos observar que eles tendem a formar uma linha crescente indicando que os episódios dessas séries tendem a terem avaliações melhores no decorrer das temporadas.
+Observando as avaliações da séries por episódios e ao longo das temporadas, não é díficil perceber uma correlação positiva e linear entre os episódios da temporada e suas notas para Breaking Bad e Hannibal, isto é, por mais existam algumas exceções (pontos fora da curva), podemos observar que, geralmente, eles tendem a formar uma linha crescente indicando que os episódios dessas séries tendem a terem avaliações melhores no decorrer das temporadas.
 
-Sherlock, por outro lado, se mostra bastante irregular na maioria das suas temporadas (com exceção para a terceira), as notas dos episódios oscilam bastante, mostrando assim que ela é a série com maior irregularidade nos episódios.
+Sherlock, por outro lado, se mostra bastante irregular na maioria das suas temporadas (com exceção da terceira), as notas dos episódios oscilam bastante, mostrando assim que ela é a série com maior irregularidade nos episódios.
     
 #3. Finais de temporada ou inícios?
 
 De acordo com os gráficos já apresentados pudemos notar que os finais de temporada tendem a ser melhores que os inícios, isto é, o último episódio tende a ter uma nota maior que o primeiro (mesmo quando há muita oscilação). Já para os finais de série não da para se dizer o mesmo, pois Sherlock teve sua última temporada com a pior avaliação dentre as outras, enquanto que Breaking Bad e Hannibal tiveram temporadas finais com notas superiores às suas iniciais.
 
+> Comentários
+
+>> Ótimo texto e com bons gráficos que ajudam a visualizar o que está sendo lido. Algumas sugestões para o relatório ficar mais completo: você pode deixar mais claro os motivos de sua escolha para a utilização de certos instrumentos para responder as perguntas. Por exemplo, o que te levou escolher a média ao invés da mediana para explicar a avaliação e realizar a comparação entre séries. O mesmo vale para a explicação da irregularidade da avaliação das séries escolhidas. Parabéns!
