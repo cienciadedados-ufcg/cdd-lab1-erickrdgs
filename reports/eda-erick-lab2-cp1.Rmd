@@ -1,0 +1,81 @@
+---
+title: "eda-erick-lab2-cp1"
+author: "Erick Santana Rodrigues"
+date: "18 de maio de 2018"
+output:
+  html_notebook:
+    toc: yes
+    toc_float: yes
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_float: yes
+---
+
+```{r setup, echo=FALSE, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(here)
+library(plotly)
+theme_set(theme_bw())
+```
+
+#Breaking Bad: uma obra-prima da AMC?
+
+Em 2013 foi ao ar Felina, o último episódio de Breaking Bad. Como um dos maiores fenômenos da cultura pop, a aclamada série de TV juntou uma legião de fãs ao redor do mundo, se consagrando como uma das maiores apostas da AMC ficando ao lado de outros gigantes da emissora como Mad Men e The Walking Dead. Mas seria ela realmente a mais bem avaliada, ou até mesmo a mais vista? Uma análise rápida nos dados do IMDB talvez seja capaz de responder essas perguntas.
+
+Serão usados dados das séries The Killing, Mad Men, Breaking Bad e Turn. Séries como Preacher e The Walking Dead não farão parte da análise pois ainda estão sendo produzidas.
+
+```{r}
+
+AMC <- read_csv(here("data/series_from_imdb.csv"), 
+                    progress = FALSE,
+                    col_types = cols(.default = col_double(), 
+                                     series_name = col_character(), 
+                                     episode = col_character(), 
+                                     url = col_character(),
+                                     season = col_character())) %>%
+        filter(series_name %in% c("Breaking Bad", "Mad Men", "The Killing", "Turn"))
+
+```
+
+Primeiro vamos analisar as avaliações dos episódios para cada uma das séries.
+
+```{r}
+
+ggplotly(AMC %>%
+            ggplot(aes(x = series_ep, y = user_rating, color = r10)) +
+            geom_point(alpha = .5) +
+            facet_wrap(~series_name) +
+            scale_color_viridis() +
+            theme_bw() +
+            labs(x = "episode", y = "rating"),
+            tooltip = c("x", "y"))
+
+```
+
+Agora analisaremos a quantidade de votos pra cada uma das séries.
+
+```{r}
+
+ggplotly(AMC %>%
+         ggplot(aes(x = series_ep, y = user_votes, color = series_name)) +
+         geom_line() +
+         labs(x = "episode", y = "votes"))    
+
+```
+
+Por fim, e não menos importante, analisaremos as notas médias de cada série por temporada.
+
+```{r}
+
+ggplotly(AMC %>%
+            group_by(series_name, season) %>%
+            summarise(season_rating = round(mean(user_rating), 2)) %>%
+            ggplot(aes(x = season, y = season_rating, group = series_name, color = series_name)) +
+            geom_point() +
+            geom_line() +
+            labs(y = "Rating", x = "Season"), 
+            tooltip = c("y"))
+
+```
+
