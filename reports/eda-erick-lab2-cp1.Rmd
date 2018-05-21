@@ -16,10 +16,11 @@ output:
 library(tidyverse)
 library(here)
 library(plotly)
+library(viridis)
 theme_set(theme_bw())
 ```
 
-#Breaking Bad: uma obra-prima da AMC?
+#Breaking Bad: a obra-prima da AMC?
 
 Em 2013 foi ao ar Felina, o último episódio de Breaking Bad. Como um dos maiores fenômenos da cultura pop, a aclamada série de TV juntou uma legião de fãs ao redor do mundo, se consagrando como uma das maiores apostas da AMC ficando ao lado de outros gigantes da emissora como Mad Men e The Walking Dead. Mas seria ela realmente a mais bem avaliada, ou até mesmo a mais vista? Uma análise rápida nos dados do IMDB talvez seja capaz de responder essas perguntas.
 
@@ -38,6 +39,8 @@ AMC <- read_csv(here("data/series_from_imdb.csv"),
 
 ```
 
+##Notas
+
 Primeiro vamos analisar as avaliações dos episódios para cada uma das séries.
 
 ```{r}
@@ -52,6 +55,11 @@ ggplotly(AMC %>%
             tooltip = c("x", "y"))
 
 ```
+Mad Men é a maior série dentre as 4, totalizando mais de 75 episódios, porém junto com The Killing ela é série com uma das menores proporções de notas 10 e com uma grande quantidade de episódios com nota inferior a 8.5. Breaking Bad, por outro lado figura como a série com maior proporção de notas 10, e com as notas mais altas entre as outras, no entanto seus dados são muito espaçados indicando que a qualidade dos episódios nem sempre segue um padrão crescente.
+
+A que mais se destaca é Turn, seu gráfico se assemelha bastante a uma reta crescente e com dados pouco espaçados, o que nos diz que ela manteve uma qualidade que foi aumentando com o passar dos episódios, colecionando apenas alguns pequenos deslizes aqui e ali.  
+
+##Avaliações
 
 Agora analisaremos a quantidade de votos pra cada uma das séries.
 
@@ -63,6 +71,12 @@ ggplotly(AMC %>%
          labs(x = "episode", y = "votes"))    
 
 ```
+
+Uma coisa interessante de se notar considerando esse gráfico e o anterior é que as séries com notas menores, Mad Men e The Killing, tem uma quantidade baixíssima de avaliações. Isso foi uma supresa pra mim, pois Mad Men já ganhou diversas premiações e achei que ela fosse figurar no topo com as melhores notas e maiores votos.
+
+Por outro lado, mesmo tendo um desempenho excelente a série Turn quase não foi avaliada pelos usuários do IMDB, ao contrário de Breaking Bad, que teve o gráfico de dispersão mais próximo ao dela. A quantidade de avaliações de Breaking Bad é muito irregular e sofreu a maior variação nos 3 últimos episódios, o que ao meu ver é estranho pois imaginei que os três últimos fossem ter uma quantidade de avaliações crescente.
+
+##Temporadas
 
 Por fim, e não menos importante, analisaremos as notas médias de cada série por temporada.
 
@@ -79,3 +93,12 @@ ggplotly(AMC %>%
 
 ```
 
+The Killing e Turn são as únicas śeries que foram capazes de manter uma qualidade sempre crescente entre todas as temporadas, porém as notas de The Killing são bem mais baixas, se equiperando com as de Mad Men. Breaking Bad figura com a melhor nota entre todas, na sua última temporada, porém sua qualidade se assemelha mais a uma curva (com um deslize na terceira temporada).
+
+##Conclusão
+
+Turn foi a série com o melhor desempenho nas suas notas, de acordo com as avaliações do IMDB, porém o fato dela ter tido poucas avaliações me gerou dúvidas? Será que com mais avaliações ela realmente teria tido um desempenho tão bom entre os episódios? Provavelmente, mais avaliações poderiam gerar mais espaçamento nas notas.
+
+Breaking Bad certamente caiu nas graças do público e mesmo com um espaçamento considerável nas suas notas, ela teve ótimos resultados, tendo a maior avaliação pra uma temporada (9.38).
+
+The Killing e Mad Men não tiveram tantas avaliações quanta as outras e suas notas foram mais baixas, porém The Killing foi capaz de manter um aumento nas suas notas por temporadas crescente.
