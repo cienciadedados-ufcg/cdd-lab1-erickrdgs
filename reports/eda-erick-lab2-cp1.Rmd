@@ -3,11 +3,11 @@ title: "eda-erick-lab2-cp1"
 author: "Erick Santana Rodrigues"
 date: "18 de maio de 2018"
 output:
-  html_notebook:
-    toc: yes
-    toc_float: yes
   html_document:
     df_print: paged
+    toc: yes
+    toc_float: yes
+  html_notebook:
     toc: yes
     toc_float: yes
 ---
@@ -26,7 +26,7 @@ Em 2013 foi ao ar Felina, o último episódio de Breaking Bad. Como um dos maior
 
 Serão usados dados das séries The Killing, Mad Men, Breaking Bad e Turn. Séries como Preacher e The Walking Dead não farão parte da análise pois ainda estão sendo produzidas.
 
-```{r}
+```{r  echo=FALSE, warning=FALSE, message=FALSE}
 
 AMC <- read_csv(here("data/series_from_imdb.csv"), 
                     progress = FALSE,
@@ -43,7 +43,7 @@ AMC <- read_csv(here("data/series_from_imdb.csv"),
 
 Primeiro vamos analisar as avaliações dos episódios para cada uma das séries.
 
-```{r}
+```{r  echo=FALSE, warning=FALSE, message=FALSE}
 
 ggplotly(AMC %>%
             ggplot(aes(x = series_ep, y = user_rating, color = r10)) +
@@ -51,8 +51,7 @@ ggplotly(AMC %>%
             facet_wrap(~series_name) +
             scale_color_viridis() +
             theme_bw() +
-            labs(x = "episode", y = "rating"),
-            tooltip = c("x", "y"))
+            labs(x = "episode", y = "rating"))
 
 ```
 Mad Men é a maior série dentre as 4, totalizando mais de 75 episódios, porém junto com The Killing ela é série com uma das menores proporções de notas 10 e com uma grande quantidade de episódios com nota inferior a 8.5. Breaking Bad, por outro lado figura como a série com maior proporção de notas 10, e com as notas mais altas entre as outras, no entanto seus dados são muito espaçados indicando que a qualidade dos episódios nem sempre segue um padrão crescente.
@@ -63,12 +62,12 @@ A que mais se destaca é Turn, seu gráfico se assemelha bastante a uma reta cre
 
 Agora analisaremos a quantidade de votos pra cada uma das séries.
 
-```{r}
+```{r echo=FALSE, warning=FALSE, message=FALSE}
 
 ggplotly(AMC %>%
          ggplot(aes(x = series_ep, y = user_votes, color = series_name)) +
          geom_line() +
-         labs(x = "episode", y = "votes"))    
+         labs(x = "episode", y = "votes"), tooltip = c("x", "y"))    
 
 ```
 
@@ -80,7 +79,7 @@ Por outro lado, mesmo tendo um desempenho excelente a série Turn quase não foi
 
 Por fim, e não menos importante, analisaremos as notas médias de cada série por temporada.
 
-```{r}
+```{r echo=FALSE, warning=FALSE, message=FALSE}
 
 ggplotly(AMC %>%
             group_by(series_name, season) %>%
@@ -97,8 +96,16 @@ The Killing e Turn são as únicas śeries que foram capazes de manter uma quali
 
 ##Conclusão
 
-Turn foi a série com o melhor desempenho nas suas notas, de acordo com as avaliações do IMDB, porém o fato dela ter tido poucas avaliações me gerou dúvidas? Será que com mais avaliações ela realmente teria tido um desempenho tão bom entre os episódios? Provavelmente, mais avaliações poderiam gerar mais espaçamento nas notas.
+Turn foi a série com o melhor desempenho nas suas notas, de acordo com as avaliações do IMDB, porém o fato dela ter tido poucas avaliações me gerou dúvidas. Será que com mais avaliações ela realmente teria tido um desempenho tão bom entre os episódios? Vamos analisar a correlação entre a quantidade de avaliações e a nota dos seus episódios para poder ter uma ideia melhor.
 
-Breaking Bad certamente caiu nas graças do público e mesmo com um espaçamento considerável nas suas notas, ela teve ótimos resultados, tendo a maior avaliação pra uma temporada (9.38).
+```{r echo=FALSE, warning=FALSE, message=FALSE}
 
-The Killing e Mad Men não tiveram tantas avaliações quanta as outras e suas notas foram mais baixas, porém The Killing foi capaz de manter um aumento nas suas notas por temporadas crescente.
+cor(AMC$user_votes, AMC$user_rating)
+
+```
+
+A correlação entre tais variáveis é moderada e positiva o que implica que com o crescimento da quantidade de votos as notas tendem a aumentar, porém com uma associação não tão forte.
+
+Agora, considerando as séries restantes.
+
+Breaking Bad certamente caiu nas graças do público e mesmo com um espaçamento considerável nas suas notas, ela teve ótimos resultados, tendo a maior avaliação pra uma temporada (9.38). The Killing e Mad Men não tiveram tantas avaliações quanta as outras e suas notas foram mais baixas, porém The Killing foi capaz de manter um aumento nas suas notas por temporadas crescente.
